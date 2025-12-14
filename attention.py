@@ -49,7 +49,7 @@ class CausalSelfAttention(nn.Module):
         
         # B N T C//N 
         
-        att=Q@K.transpose(-2,-1)/torch.sqrt(K.size(-1))
+        att=Q@K.transpose(-2,-1)/math.sqrt(K.size(-1))
         
         att=att.masked_fill(self.mask[:,:,:T,:T]==0,float(-1e6))
         
