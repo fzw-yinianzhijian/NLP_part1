@@ -35,14 +35,21 @@ def main(args):
         assert args.outputs_path is not None
         ### TODO: Implement pretraining, you can refer this setup in train.py
         ### TODO[Optional]: change hyperparameters for ablation study
-        # max_epochs=650
-        # batch_size=128
-        # learning_rate=args.pretrain_lr
-        # lr_decay=True
-        # warmup_tokens=512*20
-        # final_tokens=650*len(pretrain_dataset)*block_size
-        # num_workers=4
-        # writer=writer
+        # Setup training configuration
+        tconf = TrainerConfig(
+            max_epochs=650,
+            batch_size=128,
+            learning_rate=3e-4,  # Default learning rate, can be changed via args.pretrain_lr if needed
+            lr_decay=True,
+            warmup_tokens=512*20,
+            final_tokens=650*len(pretrain_dataset)*block_size,
+            num_workers=4,
+            writer=None,
+            ckpt_path=args.outputs_path
+        )
+        # Create trainer and start training
+        trainer = Trainer(model, pretrain_dataset, None, tconf, args.device)
+        trainer.train()
 
     elif args.function == 'finetune':
         assert args.outputs_path is not None
@@ -81,12 +88,81 @@ def main(args):
         #     You can use the args.reading_params_path flag to switch between the
         #     number of epochs for each case.
         
+        # 1. Load pretrained model if specified
+        if args.reading_params_path is not None:
+            # 确保目录存在
+            param_dir = os.path.dirname(args.reading_params_path)
+            if param_dir:
+                os.makedirs(param_dir, exist_ok=True)
+            
+            # 检查文件是否存在
+            if not os.path.exists(args.reading_params_path):
+                raise FileNotFoundError(
+                    f"Pretrained model file not found: {args.reading_params_path}\n"
+                    f"Please run pretrain first or check the path."
+                )
+            
+            model.load_state_dict(torch.load(args.reading_params_path))
+            print(f"Loaded pretrained model from {args.reading_params_path}")
+            max_epochs = 10  # With pretrained model
+        else:
+            max_epochs = 75  # Without pretrained model
+        
+        # 2. Load finetuning corpus and create dataset
+        finetune_text = open(args.finetune_corpus_path).read()
+        finetune_dataset = dataset.NameDataset(pretrain_dataset, finetune_text)
+        
+        # 3. Setup training configuration for finetuning
+        tconf = TrainerConfig(
+            max_epochs=max_epochs,
+            batch_size=256,
+            learning_rate=3e-4,  # Default learning rate, can be changed via args.finetune_lr if needed
+            lr_decay=True,
+            warmup_tokens=512*20,
+            final_tokens=200*len(pretrain_dataset)*block_size,
+            num_workers=4,
+            writer=None,
+            ckpt_path=args.outputs_path
+        )
+        
+        # 4. Create trainer and start finetuning
+        trainer = Trainer(model, finetune_dataset, None, tconf, args.device)
+        trainer.train()
+        
 
     elif args.function == 'evaluate':
         assert args.outputs_path is not None
         assert args.reading_params_path is not None
         assert args.eval_corpus_path is not None
+        
+        # 确保目录存在
+        param_dir = os.path.dirname(args.reading_params_path)
+        if param_dir:
+            os.makedirs(param_dir, exist_ok=True)
+        
+        # 检查文件是否存在
+        if not os.path.exists(args.reading_params_path):
+            raise FileNotFoundError(
+                f"Model file not found: {args.reading_params_path}\n"
+                f"Please check the path."
+            )
+        
         model.load_state_dict(torch.load(args.reading_params_path))
+        
+        # 确保输出目录存在
+        output_dir = os.path.dirname(args.outputs_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+        
+        # x = "Where was Catherine Keller born?"
+        # x = x + '⁇'
+        # x = torch.tensor([pretrain_dataset.stoi[s] for s in x], dtype=torch.long)[None,...].to(args.device)
+        # pred = utils.sample(model, x, 100, sample=False)[0]
+        # completion = ''.join([pretrain_dataset.itos[int(i)] for i in pred])
+        # print(completion)
+        # pred = completion.split('⁇')[1]
+        # print(pred)
+        
         correct = 0
         total = 0
         with open(args.outputs_path, 'w') as fout:

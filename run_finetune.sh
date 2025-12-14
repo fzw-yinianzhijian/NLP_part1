@@ -4,8 +4,9 @@
 
 python run.py \
     --function finetune \
-    --outputs_path /root/autodl-tmp/output \
+    --outputs_path ./output/finetune_with_pretrained.pt \
     --pretrain_corpus_path ./dataset/pretrain/wiki.txt \
     --finetune_corpus_path ./dataset/finetune/birth_places_train.tsv \
     --eval_corpus_path ./dataset/finetune/birth_places_dev.tsv \
-    --reading_params_path /root/autodl-tmp/output/pretrain.pt
+    --reading_params_path ./output/pretrain.pt\
+    --device cuda

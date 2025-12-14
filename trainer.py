@@ -54,6 +54,12 @@ class Trainer:
 
     def save_checkpoint(self):
         if self.config.ckpt_path is not None:
+            import os
+            # 确保目录存在
+            ckpt_dir = os.path.dirname(self.config.ckpt_path)
+            if ckpt_dir:
+                os.makedirs(ckpt_dir, exist_ok=True)
+            
             ckpt_model = self.model.module if hasattr(self.model, "module") else self.model
             print(f"saving {self.config.ckpt_path}")
             torch.save(ckpt_model.state_dict(), self.config.ckpt_path)
