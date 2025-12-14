@@ -32,10 +32,34 @@ class CausalSelfAttention(nn.Module):
         self.n_head = config.n_head
 
     def forward(self, x, layer_past=None):
-        B, T, C = x.size()
-
+        B, T, C = x.size() # batch size, sequence length, embedding dimensionality (n_embd)
+        N=self.n_head
+        
+        assert C%N==0
+        
         ## TODO: Implement causal self attention
-        raise NotImplementedError
-        ### TODO END
+        
+        Q=self.query(x)
+        K=self.key(x)
+        V=self.value(x)
+        
+        Q=Q.view(B,T,N,C//N).transpose(1,2)
+        K=K.view(B,T,N,C//N).transpose(1,2)
+        V=V.view(B,T,N,C//N).transpose(1,2)
+        
+        # B N T C//N 
+        
+        att=Q@K.transpose(-2,-1)/torch.sqrt(K.size(-1))
+        
+        att=att.masked_fill(self.mask[:,:,:T,:T]==0,float(-1e6))
+        
+        att=F.softmax(att,dim=-1)
+        att=self.attn_drop(att)
+        
+        y=att@V
+        y=y.transpose(1,2).contiguous().view(B,T,C)
+        
+        y=self.resid_drop(self.proj(y))
         
         return y
+        ### TODO END

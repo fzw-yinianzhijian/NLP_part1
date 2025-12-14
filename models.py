@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-import part1.attention as attention
+import attention 
 
 torch.manual_seed(0)
 
@@ -28,18 +28,26 @@ class GPT1Config(GPTConfig):
     n_head = 12
     n_embd = 768
 
-
 class Block(nn.Module):
     """ an unassuming Transformer block """
 
     def __init__(self, config):
         super().__init__()
+        self.ln_1=nn.LayerNorm(config.n_embd)
+        self.attn=attention.CausalSelfAttention(config)
+        self.ln_2=nn.LayerNorm(config.n_embd)
+        self.mlp = nn.Sequential(
+            nn.Linear(config.n_embd, 4*config.n_embd),
+            nn.GELU(),
+            nn.Linear(4*config.n_embd, config.n_embd),
+        )
         ### TODO: Implement the Block class
-        raise NotImplementedError
+        
 
     def forward(self, x):
         ### TODO: Implement the forward pass, you can try post-norm or pre-norm here
-        raise NotImplementedError
+        x=x+self.attn(self.ln_1(x))
+        x=x+self.mlp(self.ln_2(x))
         return x
 
 class GPT(nn.Module):
@@ -83,8 +91,24 @@ class GPT(nn.Module):
 
         # TODO: Implement the forward pass
         
-        # TODOEND
-        logits = None
-        loss = None
-
+        tok_emb=self.tok_emb(idx)
+        assert self.rope is False
+        
+        pos_emb=self.pos_emb[:, :t, :]
+        
+        x=self.drop(tok_emb+pos_emb)
+        for block in self.blocks:
+            x=block(x)
+        x=self.ln_f(x)
+        
+        if targets is not None:# train
+            logits=self.head(x)
+            assert logits.size(0) == b and logits.size(1) == t
+            assert logits.dim() == 3
+            loss=F.cross_entropy(logits.view(b*t, logits.size(-1)), targets.view(-1), ignore_index=-1)
+        else:
+            logits=self.head(x)
+            loss=None        
         return logits, loss
+        
+        # TODOEND
