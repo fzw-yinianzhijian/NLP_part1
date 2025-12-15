@@ -1,0 +1,75 @@
+\documentclass{article}
+% \documentclass[tikz,border=8pt]{standalone}
+
+% XeLaTeX 字体（可选；若只写英文也可不启用 ctex）
+% \usepackage[UTF8]{ctex}
+\usepackage{fontspec}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{braket}
+% \usepackage{ntheorem}        % ← 删除，避免与 amsthm 冲突
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{caption}
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0.2em}
+
+% 几何参数需在 hyperref 之前
+\usepackage{geometry}
+\geometry{bottom=22mm,top=22mm,left=30mm,right=30mm}
+
+% 颜色与链接
+\usepackage{xcolor}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\usepackage{cleveref}
+
+% 页眉页脚
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\setlength{\headheight}{15pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+
+% 定理环境（使用 amsthm）
+\newtheorem*{theorem}{Theorem}
+\newtheorem*{lemma}{Lemma}
+
+% 常用宏
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\al}{\alpha}
+\newcommand{\de}{\delta}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ov}{\overline}
+\newcommand{\fr}{\frac}
+\newcommand{\bbR}{\mathbb{R}}
+\numberwithin{equation}{section}
+
+\begin{document}
+
+\title{\textbf{NLP Homework 2}\vspace{15pt}}
+\author{fengzhengwei, 2024010709}
+\date{} % 可留空
+\maketitle
+\bigskip
+
+\section{Part 1}
+
+(c) Correct : 7 out of 500 , 1.4\%
+
+(e) Correct : 69 out of 500 , 13.8\%
+
+
+
+
+\end{document}
