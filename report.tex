@@ -70,6 +70,64 @@
 (e) Correct : 69 out of 500 , 13.8\%
 
 
+\section{Part 2}
 
+
+\section{Part 3}
+
+\subsection{Paper Selection}
+
+For this report, I have selected the paper \textit{Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality} by Tri Dao and Albert Gu. The paper presents a framework that connects structured state-space models (SSMs) with attention models. The authors propose an innovative approach using state-space duality (SSD) to derive efficient algorithms for sequence models, and they introduce Mamba-2, a new architecture that is faster and more efficient than Transformers for certain tasks \cite{Dao2024}.
+
+\subsection{Reproduce Challenges}
+
+While attempting to reproduce the experiments from the paper, I encountered a series of challenges:
+
+\begin{itemize}
+    \item \textbf{PyTorch Version Compatibility:} One of the main issues arose from the PyTorch version compatibility. The version I was using was not compatible with the implementation in the paper, as some of the functions did not work correctly with versions of PyTorch greater than or equal to 2.7. After removing precompiled components and re-compiling, I found that some issues discussed in the online forums about the incompatibility between newer PyTorch versions and the code were valid. The code finally ran successfully after addressing these issues.
+    
+    \item \textbf{Dataset Issues:} I faced a compatibility problem with the dataset 4.4.1 version, which no longer supported scripts and was incompatible with the lm_eval library. I had to downgrade the dataset version to make it work, which allowed me to proceed with the experiments.
+
+    \item \textbf{Training Challenges:} I was unable to retrain the models because the required datasets, such as the Pile and Slime datasets, are prohibitively large (around 800GB). As a result, I could only proceed with pre-trained models and analyze them.
+
+    \item \textbf{PIQA Test Set:} The test set for PIQA could not be removed due to compatibility issues with the current environment and the dataset's handling, which further delayed the reproduction process.
+\end{itemize}
+
+The current performance of the task is satisfactory given these limitations. The following are the performance results I obtained:
+
+\subsection{Performance Comparison}
+
+Based on the data from the experiments, I obtained the following accuracy results for several benchmark tasks:
+
+\begin{itemize}
+    \item **Winogrande**: 0.639 (from `results-mamba-2.7b.json`) vs. 0.520 (from `results-mamba-130m.json`) 
+    \item **OpenbookQA**: 0.292 (from `results-mamba-2.7b.json`) vs. 0.166 (from `results-mamba-130m.json`) 
+    \item **Lambada OpenAI**: 0.695 (from `results-mamba-2.7b.json`) vs. 0.442 (from `results-mamba-130m.json`) 
+    \item **Hellaswag**: 0.495 (from `results-mamba-2.7b.json`) vs. 0.307 (from `results-mamba-130m.json`) 
+    \item **Arc Easy**: 0.694 (from `results-mamba-2.7b.json`) vs. 0.478 (from `results-mamba-130m.json`) 
+    \item **Arc Challenge**: 0.330 (from `results-mamba-2.7b.json`) vs. 0.197 (from `results-mamba-130m.json`) 
+\end{itemize}
+
+These results are relatively consistent with the outcomes reported in the paper. While I was not able to retrain the models from scratch, the results obtained from pre-trained models indicate that Mamba-2 performs competitively on the tested benchmarks.
+
+\section{Analysis}
+
+\subsection{Strengths}
+The paper presents a strong theoretical framework connecting SSMs with attention models, particularly through the SSD framework. This connection is insightful and has the potential to significantly improve the efficiency of sequence models. The Mamba-2 architecture, which is based on this SSD framework, demonstrates improvements in speed and performance compared to earlier versions and even outperforms some Transformer models in certain contexts. The theoretical grounding of SSMs as structured matrix transformations opens up new possibilities for efficient model training and inference.
+
+\subsection{Weaknesses}
+One limitation of the proposed methods is the computational cost associated with large state-space models. While the SSD framework optimizes training and inference, the need for large state expansions may still result in a significant memory footprint and slower computation compared to simpler models like Transformers. Additionally, while Mamba-2 outperforms Mamba and Transformers on specific tasks, it may not scale as efficiently for very large models or extremely long sequences without further hardware optimizations.
+
+\subsection{Proposed Improvements}
+To address the computational cost issues, one potential improvement could involve optimizing the memory usage during training by leveraging more advanced parallelism techniques or reducing the state size during certain phases of training. Furthermore, combining the SSD framework with hybrid models that incorporate both attention layers and SSM layers, as explored in some recent works, might lead to further performance gains without sacrificing efficiency.
+
+\begin{thebibliography}{9}
+\bibitem{Dao2024}
+Tri Dao and Albert Gu.
+\textit{Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality}.
+arXiv preprint arXiv:2405.21060, 2024.
+\url{https://arxiv.org/abs/2405.21060}
+\end{thebibliography}
 
 \end{document}
+
