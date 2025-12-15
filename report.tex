@@ -72,6 +72,40 @@
 
 \section{Part 2}
 
+\subsection{2-1 (a)}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pic/task2-1.png}
+    \caption{Illustration of the results for Task 2-1}
+    \label{fig:task2-1}
+\end{figure}
+As shown in Figure~\ref{fig:task2-1}, the results for Task 2-1 are illustrated.
+
+\subsection{2-1 (b)}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pic/(b).png}
+    \caption{Illustration of the results for Task 2-1 (b)}
+    \label{fig:task2-1-b}
+\end{figure}
+As shown in Figure~\ref{fig:task2-1-b}, the results for Task 2-1 (b) are illustrated.
+
+\subsection{2-1 (c)}
+
+We constructed the dataset from the Metamath corpus, which contains formal logical inference tasks. The data was preprocessed following the Qwen template, and tokenization was handled automatically by the Qwen tokenizer during the llamafactory-cli training process. The dataset was integrated into the training pipeline through the dataset=metamath configuration in the YAML file, consistent with the LoRA fine-tuning setup for the Qwen2.5-0.5B-Instruct model.
+
+\subsection{2-1 (d)}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pic/(d).png}
+    \caption{Illustration of the results for Task 2-1 (d)}
+    \label{fig:task2-1-d}
+\end{figure}
+We trained the model using 10,000 data samples for 3 epochs. As shown in Figure~\ref{fig:task2-1-d}, the fine-tuned model achieved superior performance compared to the base model, demonstrating the effectiveness of the training process.
+
+
+The Weights and Biases (W&B) project link is \url{https://wandb.ai/605284889-tsinghua-university/NLP2025_2024010709}.
 
 \section{Part 3}
 
